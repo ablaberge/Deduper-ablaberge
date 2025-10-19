@@ -10,6 +10,7 @@ Test input/output SAM files in ```Test```.
 ## Pseudocode 
 
 ```
+# NOTE: This algo assumes the input is an UNSORTED SAM file
 metadata: dict = {}     # Key = UMI, Value = {chrom,strand,position}
 umi: set = {}           # To hold known UMIs
 
