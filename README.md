@@ -11,26 +11,33 @@ This tool removes PCR duplicates from single-end DNA sequencing libraries and re
 
 The SAM file must:
 - Contain only uniquely mapped single-end reads
-- Be sorted by chromosome and position 
+- Be sorted by chromosome and position OR call to script must include ```-s``` flag 
 - UMI must be the final set of characters in each record's QNAME (e.g., ```NS500451:154:HWKTMBGXX:1:11101:15364:1139:GAACAGGT```) 
 
 The UMI file must:
 - Be a text file
 - Contain one UMI per line
 
+### Resources 
+
+This script loads one chromosome at a time into memory, so you must have enough memory to store the length of the largest chromosome in your input SAM file. Additionally, if using the ```-s``` flag, a minimum of 716 MiB is required. 
+
 
 ### Dependencies 
 
 Python 3.12.10
+Samtools 1.22.1
 
 
 ## Usage 
 
 Description of parameters:
-    - ```-f```, ```--file```: designates absolute file path to sorted sam file
-    - ```-o```, ```--outfile```: designates absolute file path to deduplicated sam file
-    - ```-u```, ```--umi```: designates file containing the list of UMIs
+    - ```-f```, ```--file```: designates absolute file path to sorted sam file, REQUIRED
+    - ```-o```, ```--outfile```: designates absolute file path to deduplicated sam file, REQUIRED
+    - ```-u```, ```--umi```: designates file containing the list of UMIs, REQUIRED
+    - ```-s```, ```--sort```: indicates that input sam file is NOT sorted, OPTIONAL 
     - ```-h```, ```--help```: prints a help message
+
 
 There are two ways to run the tool:
 
@@ -41,4 +48,5 @@ There are two ways to run the tool:
 
 2. With python script directly 
 - Run the following command: ```./laberge_deduper.py -f [path to input SAM] -o [path to output] -u [path to UMI text file]```
+- ```-s``` flag MUST be included in the command if input SAM is unsorted
 
