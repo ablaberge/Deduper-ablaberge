@@ -2,17 +2,21 @@
 
 import argparse
 import re
+import subprocess
+import sys
 
 def get_args():
-	parser = argparse.ArgumentParser(
-	    description="Program to remove PCR duplicates from a sorted (chrom, pos) SAM file")
-	parser.add_argument("-f", "--file",
-	                    help="Absolute path to the sorted SAM file for deduplication", type=str, required=True)
-	parser.add_argument("-o", "--outfile",
-	                    help="Absolute path to deduplicated output SAM", type=str, required=True)
-	parser.add_argument("-u", "--umi",
-	                    help="Text file containing a list of known UMIs", type=str, required=True)
-	return parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description="Program to remove PCR duplicates from a sorted (chrom, pos) SAM file")
+    parser.add_argument("-f", "--file",
+                        help="Absolute path to the sorted SAM file for deduplication", type=str, required=True)
+    parser.add_argument("-o", "--outfile",
+                        help="Absolute path to deduplicated output SAM", type=str, required=True)
+    parser.add_argument("-u", "--umi",
+                        help="Text file containing a list of known UMIs", type=str, required=True)
+    parser.add_argument("-s", "--sort",
+                        help="Input SAM is unsorted", action="store_true", required=False)
+    return parser.parse_args()
 
 def adjust_pos(cigar:str, pos:int, strand:bool) -> int:
     """Takes the left-most position int from a SAM record and returns the true 5' start position adjusted for any soft-clipping"""
@@ -45,6 +49,30 @@ def extract_metadata(line:list) -> list:
     cigar:str = line[5]
     return [chrom,pos,strand,cigar]
 
+def sort_sam(sam:str) -> str:
+    """Sorts the input SAM file if user indicates it wasn't presorted"""
+    sorted_sam:str = sam.split(".sam")[0]
+    sorted_sam = f"{sorted_sam}.sorted.sam"
+    subprocess.run(
+        f"samtools sort -o {sorted_sam} {sam}",
+        shell=True,
+        check=True #raises an error if this fails
+    )
+    return sorted_sam
+
+def check_sort_status(sam:str) -> bool:
+    """Checks if the input SAM is sorted"""
+    # Extract sort order from SAM
+    result = subprocess.run(
+        f"SORT_ORDER = $(samtools view -H {sam} | grep '@HD' | grep -o 'SO:[a-zA-Z]*' | cut -d':' -f2)",
+        shell=True,
+        check=True,
+        capture_output=True,
+        text=True
+    )
+    sort_order = result.stdout.strip() # Get sort status into python usable var
+    return sort_order in ("coordinate", "queryname") # Returns true if sorted by coordinate, position, false otherwise
+
 
 
 def main():
@@ -56,6 +84,17 @@ def main():
     num_headers: int = 0 
     num_unique_reads = 0
     num_wrong_umis = 0
+
+    if args.sort: # Sort SAM before continuing
+        print(f"Input SAM is unsorted. Sorting with Samtools now.")
+        args.file = sort_sam(args.file)
+        print(f"Path to sorted sam file: {args.file}")
+    else: # User indicates SAM is already sorted, so make sure this is true or error out
+        if not check_sort_status(args.file):
+            print(f"Input SAM file is not sorted by coordinate and position. Please rerun and include '-s' flag for proper processing.")
+            sys.exit(1)
+
+
 
     with open(args.umi, "r") as fh:
         for line in fh:
