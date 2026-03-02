@@ -32,6 +32,7 @@ Samtools 1.22.1
 ## Usage 
 
 Description of parameters:
+
     - ```-f```, ```--file```: designates absolute file path to sorted sam file, REQUIRED
     - ```-o```, ```--outfile```: designates absolute file path to deduplicated sam file, REQUIRED
     - ```-u```, ```--umi```: designates file containing the list of UMIs, REQUIRED
@@ -50,3 +51,8 @@ There are two ways to run the tool:
 - Run the following command: ```./laberge_deduper.py -f [path to input SAM] -o [path to output] -u [path to UMI text file]```
 - ```-s``` flag MUST be included in the command if input SAM is unsorted
 
+Outputs:
+
+- Chromosome and position sorted SAM file (only if ```-s``` flag is used)
+- Deduplicated SAM file
+- Stats file containing information about the records removed  
