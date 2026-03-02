@@ -149,11 +149,16 @@ def main():
     # Print path to outputted SAM
     outfile.close()
 
+    stats_file:str = args.outfile.split(".sam")[0]
+    stats_file = stats_file + ".stats.txt"
+    with open(stats_file, "w") as file:
+        file.write(f"Path to deduplicated SAM file: {args.outfile}")
+        file.write(f"Number of header lines: {num_headers}")
+        file.write(f"Number of unique reads: {num_unique_reads}")
+        file.write(f"Number of wrong UMIs encountered: {num_wrong_umis}")
+        file.write(f"Number of duplicates removed: {num_dupes_removed}")
     print(f"Path to deduplicated SAM file: {args.outfile}")
-    print(f"Number of header lines: {num_headers}")
-    print(f"Number of unique reads: {num_unique_reads}")
-    print(f"Number of wrong UMIs encountered: {num_wrong_umis}")
-    print(f"Number of duplicates removed: {num_dupes_removed}")
+    print(f"Path to stats file: {stats_file}")
 
 if __name__ == "__main__":
     main()
