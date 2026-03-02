@@ -4,7 +4,6 @@
 
 This tool removes PCR duplicates from single-end DNA sequencing libraries and retains only a single copy of each read (the first encountered read). Records with erroneous UMIs with are discarded. Records are considered PCR duplicates if and only if all of the following fields are consistent between multiple records: UMI, strand, 5' start position, and chromosome (RNAME). 
 
-
 ## Requirements
 
 ### Input 
@@ -31,7 +30,7 @@ Samtools 1.22.1
 
 ## Usage 
 
-Description of parameters:
+### Description of parameters
 
     - ```-f```, ```--file```: designates absolute file path to sorted sam file, REQUIRED
     - ```-o```, ```--outfile```: designates absolute file path to deduplicated sam file, REQUIRED
@@ -39,6 +38,8 @@ Description of parameters:
     - ```-s```, ```--sort```: indicates that input sam file is NOT sorted, OPTIONAL 
     - ```-h```, ```--help```: prints a help message
 
+
+### Ways to run the tool:
 
 There are two ways to run the tool:
 
@@ -51,7 +52,7 @@ There are two ways to run the tool:
 - Run the following command: ```./laberge_deduper.py -f [path to input SAM] -o [path to output] -u [path to UMI text file]```
 - ```-s``` flag MUST be included in the command if input SAM is unsorted
 
-Outputs:
+### Outputs
 
 - Chromosome and position sorted SAM file (only if ```-s``` flag is used)
 - Deduplicated SAM file
