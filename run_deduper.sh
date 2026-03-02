@@ -9,7 +9,11 @@
 #SBATCH --output=LOG/dedupe_%j.out       #optional: file to store stdout from job, %j adds the assigned jobID
 #SBATCH --error=LOG/dedupe_%j.err        #optional: file to store stderr from job, %j adds the assigned jobID
 
+SCRIPT="./laberge_deduper.py"
+SAM="C1_SE_uniqAlign.sorted.sam"
+OUTPUT="C1_SE_uniqAlign.sorted.deduped.sam"
+UMI="STL96.txt"
 
-/usr/bin/time -v ./deduper.py -f /projects/bgmp/alaberge/bioinfo/Bi624/Deduper-ablaberge/output/C1_SE_uniqAlign.sorted.sam \
-    -o /projects/bgmp/alaberge/bioinfo/Bi624/Deduper-ablaberge/output/C1_SE_uniqAlign.sorted.deduped.sam \
-    -u /projects/bgmp/alaberge/bioinfo/Bi624/Deduper-ablaberge/STL96.txt
+/usr/bin/time -v "$SCRIPT" -f "$SAM" \
+    -o "$OUTPUT" \
+    -u "$UMI"
